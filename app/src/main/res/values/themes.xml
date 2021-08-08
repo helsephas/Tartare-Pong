@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TartarePong" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.TartarePong" parent="Theme.AppCompat">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/design_default_color_error</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
