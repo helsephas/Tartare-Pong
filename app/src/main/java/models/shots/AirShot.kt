@@ -1,12 +1,7 @@
 package models.shots
 
-import models.Drink
 import models.Player
-import models.Shot
-import models.ShotType
 
-class AirShot(shotedBy: Player, drink: Drink) : Shot(shotedBy, drink, ShotType.AIR_SHOT) {
+class AirShot(shotedBy: Player,var defender:Player?,turnNumber:Int) : Shot(shotedBy, ShotType.AIR_SHOT,false,turnNumber) {
 
-    val isSuccess: Boolean = false
-    lateinit var defender : Player
 }

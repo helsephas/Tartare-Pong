@@ -2,10 +2,7 @@ package models.shots
 
 import models.Drink
 import models.Player
-import models.Shot
-import models.ShotType
 
-class BounceShot(shotedBy: Player, var isSuccess: Boolean = false, drink: Drink) : Shot(shotedBy, drink, ShotType.BOUNCE) {
+class BounceShot(shotedBy: Player, isSuccess: Boolean ,var drink: Drink?,var defender:Player?, turnNumber:Int) : Shot(shotedBy, ShotType.BOUNCE,isSuccess,turnNumber) {
 
-    lateinit var defender : Player
 }
