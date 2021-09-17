@@ -50,6 +50,7 @@ class Match(
                 this.shots.add(BounceShot(currentPlayerPlaying, isSuccess(), currentDrinkSelected, defenderPlayer, turnNumber))
             }
         }
+        currentPlayerPlaying.hasPlayed = true
         if (currentPlayerPlaying.trickShotAvailable) {
             currentPlayerPlaying.trickShotAvailable = false
         }

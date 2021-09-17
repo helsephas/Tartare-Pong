@@ -33,7 +33,7 @@ class PlayerButton(var button: Button, var playerNumber: Int) {
         } else {
             if (playerNumber == otherPlayer.number && otherPlayer.trickShotAvailable) {
                 selectableForTrickShot()
-            } else if (playerNumber == otherPlayer.number && currentPlayer.trickShotAvailable) {
+            } else if (playerNumber == otherPlayer.number && !otherPlayer.hasPlayed) {
                 selectable()
             } else {
                 desactivateSelection()
