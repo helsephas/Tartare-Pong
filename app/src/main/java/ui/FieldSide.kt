@@ -10,21 +10,21 @@ class FieldSide(
 
 ) {
 
-    fun desactivatePlayers() {
+    fun checkOtherPlayersState(match: Match) {
         this.playersButton.forEach { playerButton ->
-            playerButton.desactivateSelection()
+            playerButton.checkOtherTeamCondition(match)
         }
     }
 
-    fun desactivateDrinks() {
+    fun desactivateDrinks(match: Match) {
         this.drinksButton.forEach { drinkButton ->
-            drinkButton.disabled()
+            drinkButton.checkDisableCondition(match)
         }
     }
 
-    fun checkPlayersState(currentPlayer: Player, othePlayer: Player, nbShots:Int) {
+    fun checkPlayersState(match: Match) {
         this.playersButton.forEach { playerButton ->
-            playerButton.checkButtonConditions(currentPlayer,othePlayer,nbShots)
+            playerButton.checkButtonConditions(match)
         }
     }
 

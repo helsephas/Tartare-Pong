@@ -10,7 +10,7 @@ abstract class AbstractButton(open var button: Button) {
         button.isEnabled = true
     }
 
-    fun selected() {
+    open fun selected() {
         button.setBackgroundResource(R.drawable.rounded_cirle_green)
         button.isEnabled = false
     }
@@ -23,6 +23,11 @@ abstract class AbstractButton(open var button: Button) {
     fun notDisplay() {
         button.alpha = 0.0F
         button.isClickable = false
+    }
+
+    fun display() {
+        button.alpha = 1.0F
+        button.isClickable = true
     }
 
 }

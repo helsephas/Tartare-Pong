@@ -2,7 +2,6 @@ package com.example.tartarepong
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import kotlinx.android.synthetic.main.game_activity.*
 import models.Match
@@ -12,9 +11,8 @@ import ui.*
 
 class GameActivity : Activity() {
 
-    var match: Match = Match().startGame()
-    var drinksScored: MutableList<Button> = arrayListOf()
-    var field: Field = Field()
+    private var match: Match = Match().startGame()
+    private var field: Field = Field()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +23,7 @@ class GameActivity : Activity() {
 
 
     private fun setUp() {
-        this.field.init(initPlayersButtonAList(), initPlayersButtonBList(), initDrinksButtonTeamA(), initDrinksButtonTeamB(), initShotsButton(), FailedButton(imageButtonFailed))
+        this.field.init(initPlayersButtonAList(), initPlayersButtonBList(), initDrinksButtonTeamA(), initDrinksButtonTeamB(), initShotsButton(), FailedButton(imageButtonFailed),DefenseFailedButton(buttonFailedDefense))
         this.field.checkFieldConfiguration(match)
         linkPlayersButtons()
         initListeners()
@@ -35,21 +33,21 @@ class GameActivity : Activity() {
     //region Visual
 
     private fun initPlayersButtonAList(): MutableList<PlayerButton> {
-        var playersButton: MutableList<PlayerButton> = arrayListOf()
+        val playersButton: MutableList<PlayerButton> = arrayListOf()
         playersButton.add(PlayerButton(buttonPlayer1, 1))
         playersButton.add(PlayerButton(buttonPlayer2, 2))
-        return playersButton;
+        return playersButton
     }
 
     private fun initPlayersButtonBList(): MutableList<PlayerButton> {
-        var playersButton: MutableList<PlayerButton> = arrayListOf()
+        val playersButton: MutableList<PlayerButton> = arrayListOf()
         playersButton.add(PlayerButton(buttonPlayer3, 1))
         playersButton.add(PlayerButton(buttonPlayer4, 2))
-        return playersButton;
+        return playersButton
     }
 
     private fun initDrinksButtonTeamA(): MutableList<DrinkButton> {
-        var drinksTeamA: MutableList<DrinkButton> = arrayListOf()
+        val drinksTeamA: MutableList<DrinkButton> = arrayListOf()
         drinksTeamA.add(DrinkButton(teamAdrink1, 1, 1))
         drinksTeamA.add(DrinkButton(teamAdrink2, 1, 2))
         drinksTeamA.add(DrinkButton(teamAdrink3, 1, 3))
@@ -60,7 +58,7 @@ class GameActivity : Activity() {
     }
 
     private fun initDrinksButtonTeamB(): MutableList<DrinkButton> {
-        var drinksTeamB: MutableList<DrinkButton> = arrayListOf()
+        val drinksTeamB: MutableList<DrinkButton> = arrayListOf()
         drinksTeamB.add(DrinkButton(teamBdrink1, 1, 1))
         drinksTeamB.add(DrinkButton(teamBdrink2, 1, 2))
         drinksTeamB.add(DrinkButton(teamBdrink3, 1, 3))
@@ -71,7 +69,7 @@ class GameActivity : Activity() {
     }
 
     private fun initShotsButton(): MutableList<ShotButton> {
-        var shotsButton: MutableList<ShotButton> = arrayListOf()
+        val shotsButton: MutableList<ShotButton> = arrayListOf()
         shotsButton.add(ShotButton(buttonSimpleShot, ShotType.SIMPLE))
         shotsButton.add(ShotButton(buttonAirShot, ShotType.AIR_SHOT))
         shotsButton.add(ShotButton(buttonTrickShot, ShotType.TRICK_SHOT))
@@ -90,6 +88,8 @@ class GameActivity : Activity() {
         linkDrinksButtons()
         onFailedButton()
         linkShotTypeButtons()
+        onFailedDefenserbutton()
+        onChangeTeam()
     }
 
     private fun linkDrinksButtons() {
@@ -160,14 +160,20 @@ class GameActivity : Activity() {
     }
 
     private fun onPlayerSelected(teamNumber: Int, playerNumber: Int) {
-        match.changePlayerCurrentPlayerTo(teamNumber, playerNumber)
+        if(teamNumber == match.getCurrentTeam().number){
+            match.changePlayerCurrentPlayerTo(playerNumber)
+        } else if(match.hasDefender() && teamNumber == match.getOtherTeam().number && match.defenderPlayer()!!.number == playerNumber){
+            match.disabledDefender()
+        }else if(match.defenderAvailable() && teamNumber == match.getOtherTeam().number) {
+            match.changeDefenderPlayerTo(playerNumber)
+        }
+
         field.checkFieldConfiguration(match)
     }
 
     private fun linkShotTypeButtons() {
         buttonTrickShot.setOnClickListener {
             onShotSelected(ShotType.TRICK_SHOT)
-            match.currentShotType = ShotType.TRICK_SHOT
         }
         buttonAirShot.setOnClickListener {
             onShotSelected(ShotType.AIR_SHOT)
@@ -185,7 +191,7 @@ class GameActivity : Activity() {
 
     private fun onShotSelected(shotType: ShotType) {
         match.currentShotType = shotType
-        field.checkShotButtonsConditions(match)
+        field.checkFieldConfiguration(match)
     }
 
     private fun onFailedButton() {
@@ -199,31 +205,21 @@ class GameActivity : Activity() {
         field.checkFieldConfiguration(match)
     }
 
+    private fun onFailedDefenserbutton(){
+        buttonFailedDefense.setOnClickListener {
+            onFailedDefenserbuttonSelected()
+        }
+    }
+
+    private fun onFailedDefenserbuttonSelected(){
+        match.hasFailedDefense =  !match.hasFailedDefense
+        field.checkFieldConfiguration(match)
+    }
+
     private fun onValidateChoice() {
         buttonValidate.setOnClickListener {
             onValidChoiceSelected()
         }
-    }
-    /*if (isValidChoice()) {
-            if (match.drinksDueToSameDrink?.size == match.NUMBER_DRINKS_WHEN_DOUBLE) {
-
-            } else {
-                match.nbShots -= 1
-                checkForImpactOfShot()
-                changePlayer()
-                if (match.nbShots == 0) {
-                    if (match.nbShotSucced != 2) {
-                        changeTeaam()
-                    }
-                    match.nbShotSucced = 0
-                    match.nbShots = 2
-                }
-            }
-        }*/
-
-    private fun changeTeaam() {
-        match.changeTeam()
-        field.checkFieldConfiguration(match)
     }
 
     private fun onValidChoiceSelected() {
@@ -231,6 +227,16 @@ class GameActivity : Activity() {
             match.addShot()
             field.checkFieldConfiguration(match)
         }
+    }
+
+    private fun onChangeTeam(){
+        buttonChangeTeam.setOnClickListener {
+            onChangeTeamSelected()
+        }
+    }
+
+    private fun onChangeTeamSelected() {
+        match.changeTeam()
     }
 
     private fun isValidChoice(): Boolean {
@@ -335,3 +341,20 @@ private fun isFinished(): Boolean {
     }
     match.drinkNumberScored = match.currentDrinkSelected!!.number
     //drinkScored()*/
+
+/*if (isValidChoice()) {
+        if (match.drinksDueToSameDrink?.size == match.NUMBER_DRINKS_WHEN_DOUBLE) {
+
+        } else {
+            match.nbShots -= 1
+            checkForImpactOfShot()
+            changePlayer()
+            if (match.nbShots == 0) {
+                if (match.nbShotSucced != 2) {
+                    changeTeaam()
+                }
+                match.nbShotSucced = 0
+                match.nbShots = 2
+            }
+        }
+    }*/

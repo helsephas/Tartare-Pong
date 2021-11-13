@@ -12,5 +12,10 @@ class Player( var id: BigDecimal = BigDecimal(0),
         return "Player(id=$id, name='$name', number=$number, teamNumber=$teamNumber, trickShotAvailable=$trickShotAvailable)"
     }
 
+    fun resetTurn(){
+        hasPlayed = false
+        trickShotAvailable = false
+    }
+
 
 }

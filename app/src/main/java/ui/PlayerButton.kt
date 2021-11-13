@@ -2,6 +2,7 @@ package ui
 
 import android.graphics.Color
 import android.widget.Button
+import models.Match
 import models.Player
 
 class PlayerButton(var button: Button, var playerNumber: Int) {
@@ -22,12 +23,36 @@ class PlayerButton(var button: Button, var playerNumber: Int) {
         button.isEnabled = true
     }
 
+    private fun selectableForDefense(){
+        this.button.setBackgroundColor(Color.CYAN)
+        button.isEnabled = true
+    }
+
+    private fun selectedForDefense(){
+        this.button.setBackgroundColor(Color.MAGENTA)
+        button.isEnabled = true
+    }
+
+    fun checkOtherTeamCondition(match: Match){
+        if(match.hasDefender() && match.defenderPlayer()?.number == playerNumber){
+            selectedForDefense()
+        } else if(match.defenderAvailable()){
+            selectableForDefense()
+        } else {
+            desactivateSelection()
+        }
+    }
+
     fun desactivateSelection() {
         this.button.setBackgroundColor(Color.RED)
         button.isEnabled = false
     }
 
-    fun checkButtonConditions(currentPlayer: Player,otherPlayer:Player,nbShots:Int) {
+    fun checkButtonConditions(match: Match) {
+        val currentPlayer: Player = match.currentPlayerPlaying
+        val otherPlayer:Player = match.getOtherPlayer()
+        val nbShots:Int = match.nbShots
+
         if (currentPlayer.number == playerNumber) {
             activateShot()
         } else {

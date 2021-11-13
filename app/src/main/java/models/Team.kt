@@ -10,17 +10,26 @@ class Team(
     var drinks: MutableList<Drink> = arrayListOf()
 ) {
 
+    var redemptionCount:Int = 6
+
+    fun init(player1Name:String,player2Name:String){
+        this.addPlayer(Player(BigDecimal(1), player1Name, 1, this.number))
+        this.addPlayer(Player(BigDecimal(2), player2Name, 2, this.number))
+        this.initDrinks()
+    }
+
     fun addPlayer(player: Player) {
         this.players.add(player)
     }
 
+
     fun initDrinks() {
-        this.drinks.add(Drink(BigDecimal(1), 1))
-        this.drinks.add(Drink(BigDecimal(2), 2))
-        this.drinks.add(Drink(BigDecimal(3), 3))
-        this.drinks.add(Drink(BigDecimal(4), 4))
-        this.drinks.add(Drink(BigDecimal(5), 5))
-        this.drinks.add(Drink(BigDecimal(6), 6))
+        this.drinks.add(Drink(BigDecimal(1), 1,number))
+        this.drinks.add(Drink(BigDecimal(2), 2,number))
+        this.drinks.add(Drink(BigDecimal(3), 3,number))
+        this.drinks.add(Drink(BigDecimal(4), 4,number))
+        this.drinks.add(Drink(BigDecimal(5), 5,number))
+        this.drinks.add(Drink(BigDecimal(6), 6,number))
     }
 
     fun getOtherPlayer(playerNumber: Int): Player {
@@ -61,6 +70,12 @@ class Team(
             }
         }
         throw Exception("drink not found")
+    }
+
+    fun resetAllPlayers(){
+        for(player in this.players){
+            player.resetTurn()
+        }
     }
 
     fun allDrinksAreDone(): Boolean {

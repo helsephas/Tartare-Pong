@@ -76,7 +76,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/drink"
-                android:text="1"
+                android:text="6"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toStartOf="@+id/teamAdrink2"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +90,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/drink"
-                android:text="2"
+                android:text="5"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toStartOf="@+id/teamAdrink3"
                 app:layout_constraintStart_toEndOf="@+id/teamAdrink1"
@@ -103,7 +103,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/drink"
-                android:text="3"
+                android:text="4"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/teamAdrink2"
@@ -115,7 +115,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/drink"
-                android:text="4"
+                android:text="3"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toStartOf="@+id/teamAdrink5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +127,7 @@
                 android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/drink"
-                android:text="5"
+                android:text="2"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/teamAdrink4"
@@ -141,7 +141,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/drink"
-                android:text="6"
+                android:text="1"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -149,6 +149,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/teamAdrink4" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/textViewRedemptionTeam1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="6"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            app:layout_constraintEnd_toStartOf="@+id/teamADrinksConstraintLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/teamAPlayersConstraintLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -161,123 +175,179 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/teamAConstraintLayout">
 
-        <Button
-            android:id="@+id/buttonSimpleShot"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/specialActionsConstraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:text="Simple"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonTrickShot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/buttonTrickShot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:text="Trick shot"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonCallShot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonSimpleShot" />
-
-        <Button
-            android:id="@+id/buttonCallShot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:text="Call"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonBounceShot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonTrickShot" />
-
-        <Button
-            android:id="@+id/buttonBounceShot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:text="Bounce"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAirShot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonCallShot" />
-
-        <Button
-            android:id="@+id/buttonAirShot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:text="Air shot"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonBounceShot" />
-
-        <ImageButton
-            android:id="@+id/imageButtonBack"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_cirle"
-            android:contentDescription="Back"
-            app:layout_constraintBottom_toTopOf="@+id/imageButtonFault"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/abc_vector_test" />
-
-
-        <ImageButton
-            android:id="@+id/imageButtonFault"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_cirle"
-            app:layout_constraintBottom_toTopOf="@+id/imageButtonFailed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonBack"
-            android:src="@android:drawable/ic_dialog_alert" />
-
-        <ImageButton
-            android:id="@+id/imageButtonFailed"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/rounded_cirle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonFault"
-            android:src="@android:drawable/ic_delete"/>
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/buttonValidate"
+            <ImageButton
+                android:id="@+id/imageButtonFault"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_cirle"
+                android:src="@android:drawable/ic_dialog_alert"
+                app:layout_constraintBottom_toTopOf="@+id/imageButtonFailed"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageButtonBack" />
+
+            <ImageButton
+                android:id="@+id/imageButtonBack"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/rounded_cirle"
+                android:contentDescription="Back"
+                android:src="@drawable/abc_vector_test"
+                app:layout_constraintBottom_toTopOf="@+id/imageButtonFault"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/imageButtonFailed"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_cirle"
+                android:src="@android:drawable/ic_delete"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageButtonFault" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/validationActrionsConstraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Valider"
-            android:background="@color/black"
-            android:textColor="@color/white"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/buttonTrickShot"
-            app:layout_constraintStart_toEndOf="@+id/imageButtonFault"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/shotConstraintLayout"
+            app:layout_constraintStart_toEndOf="@+id/specialActionsConstraintLayout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/buttonChangeTeam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/black"
+                android:text="Tour suivant"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toStartOf="@+id/buttonValidate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonFailedDefense" />
+
+            <Button
+                android:id="@+id/buttonFailedDefense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:text="Défense ratée"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/buttonValidate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/black"
+                android:text="Valider"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/buttonChangeTeam"
+                app:layout_constraintTop_toBottomOf="@+id/buttonFailedDefense" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shotConstraintLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/buttonSimpleShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_cirle"
+                android:text="Simple"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonTrickShot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/buttonTrickShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_cirle"
+                android:text="Trick shot"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonCallShot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonSimpleShot" />
+
+            <Button
+                android:id="@+id/buttonCallShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_cirle"
+                android:text="Call"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonBounceShot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonTrickShot" />
+
+            <Button
+                android:id="@+id/buttonBounceShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_cirle"
+                android:text="Bounce"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/buttonAirShot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonCallShot" />
+
+            <Button
+                android:id="@+id/buttonAirShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rounded_cirle"
+                android:text="Air shot"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonBounceShot" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -306,7 +376,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/drink"
-                android:text="1"
+                android:text="6"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -318,7 +388,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/drink"
-                android:text="2"
+                android:text="5"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/teamBdrink1" />
@@ -331,7 +401,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/drink"
-                android:text="3"
+                android:text="4"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -343,7 +413,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/drink"
-                android:text="4"
+                android:text="3"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/teamBdrink1"
                 app:layout_constraintEnd_toStartOf="@+id/teamBdrink5"
@@ -356,7 +426,7 @@
                 android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/drink"
-                android:text="5"
+                android:text="2"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/teamBdrink3"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -368,7 +438,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/drink"
-                android:text="6"
+                android:text="1"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/teamBdrink5"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -421,6 +491,20 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/textViewRedemptionTeam2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="6"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/teamBDrinksConstraintLayout"
+            app:layout_constraintEnd_toStartOf="@+id/teamBDrinksConstraintLayout"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

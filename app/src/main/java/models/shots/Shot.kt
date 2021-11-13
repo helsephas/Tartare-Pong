@@ -2,7 +2,8 @@ package models.shots
 
 import models.Player
 
-abstract class Shot(var shotedBy: Player, val shotType: ShotType, var isSuccess: Boolean, var turnNumber:Int) {
+abstract class Shot(var shotedBy: Player, val shotType: ShotType, var isSuccess: Boolean, var turnNumber:Int, var shotImpact:Int) {
+
 
 
     override fun toString(): String {

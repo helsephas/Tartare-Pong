@@ -15,12 +15,22 @@ class DrinkButton(override var button: Button, var teamNumber: Int, var drinkNum
     fun checkButtonCondition(match: Match) {
         if(match.isDrinkScored(drinkNumber) && !match.isDrinkNumberSelected(drinkNumber)) {
             scored()
-        } else if(match.isDrinkScoredDefinitivelyScored(drinkNumber)){
+        } else if(match.isDrinkScoredDefinitivelyScoredForCurrentTeam(drinkNumber)){
             notDisplay()
         } else if (match.isDrinkNumberSelected(drinkNumber)) {
             selected()
+        }else if(match.currentShotType.isAirShot()){
+            disabled()
         } else {
             basic()
+        }
+    }
+
+    fun checkDisableCondition(match: Match){
+        if(match.isDrinkScoredDefinitivelyScoredForOtherTeam(drinkNumber)){
+            notDisplay()
+        } else {
+            disabled()
         }
     }
 
