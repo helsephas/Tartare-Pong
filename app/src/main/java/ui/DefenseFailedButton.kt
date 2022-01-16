@@ -6,8 +6,8 @@ import models.Match
 
 class DefenseFailedButton(override var button: Button) : AbstractButton(button) {
 
-    fun checkButtonCondition(match: Match) {
-        if(match.hasDefender() && !match.isDrinkSelected()){
+    fun checkButtonState(match: Match) {
+        if(match.hasDefender()){
             display()
             if(match.hasFailedDefense){
                 selected()
@@ -16,7 +16,6 @@ class DefenseFailedButton(override var button: Button) : AbstractButton(button) 
             }
         } else {
             notDisplay()
-            match.hasNotFailedAnymore()
         }
     }
 

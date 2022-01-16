@@ -3,37 +3,31 @@ package ui
 import android.widget.Button
 import models.Match
 import models.shots.ShotType
-import java.util.concurrent.Callable
 
 class ShotButton(override var button: Button, var shotType: ShotType) : AbstractButton(button) {
 
-    fun checkConditions(match: Match) {
+    fun checkShotButtonState(match: Match) {
         when (shotType) {
             ShotType.CALL ->
-                hasAlreadyPlayed(match.currentPlayerHasAlreadyPlayed(), match.currentShotType,match.hasCurrentPlayerHasTrickShot(),match.currentDrinkIsCallable())
+                checkState(match)
             ShotType.TRICK_SHOT ->
-                hasAlreadyPlayed(match.currentPlayerHasAlreadyPlayed(), match.currentShotType,match.hasCurrentPlayerHasTrickShot(),match.currentDrinkIsCallable())
+               checkState(match)
             ShotType.AIR_SHOT ->
-                hasAlreadyPlayed(match.currentPlayerHasAlreadyPlayed(), match.currentShotType,match.hasCurrentPlayerHasTrickShot(),match.currentDrinkIsCallable())
+               checkState(match)
             ShotType.BOUNCE ->
-                hasAlreadyPlayed(match.currentPlayerHasAlreadyPlayed(), match.currentShotType,match.hasCurrentPlayerHasTrickShot(),match.currentDrinkIsCallable())
+               checkState(match)
             ShotType.SIMPLE ->
-                hasAlreadyPlayed(match.currentPlayerHasAlreadyPlayed(), match.currentShotType,match.hasCurrentPlayerHasTrickShot(),match.currentDrinkIsCallable())
+               checkState(match)
         }
     }
 
-    private fun hasAlreadyPlayed(hasAlreadyPlayed: Boolean, shotType: ShotType,hasCurrentPlayerHasTrickShot:Boolean, isDrinkCallable: Boolean) {
+    private fun checkState(match: Match) {
         when {
-            this.shotType == shotType -> {
+            match.currentShotTypeIs(this.shotType) -> {
                 selected()
             }
-            !hasCurrentPlayerHasTrickShot && this.shotType != ShotType.TRICK_SHOT && this.shotType != ShotType.CALL -> {
-                basic()
-            }
-            hasCurrentPlayerHasTrickShot && this.shotType == ShotType.TRICK_SHOT -> {
-                basic()
-            }
-            isDrinkCallable && this.shotType == ShotType.CALL -> {
+            match.isShotTypeAvailable(this.shotType)
+             -> {
                 basic()
             }
             else -> {

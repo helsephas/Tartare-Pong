@@ -5,19 +5,18 @@ import android.os.Bundle
 import android.widget.Toast
 import kotlinx.android.synthetic.main.game_activity.*
 import models.Match
-import models.NoDrinkSelectedException
+import models.exception.NoDrinkSelectedException
 import models.shots.ShotType
 import ui.*
 
 class GameActivity : Activity() {
 
-    private var match: Match = Match().startGame()
-    private var field: Field = Field()
+    var match: Match = Match().startGame()
+    var field: Field = Field()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.game_activity)
-
         setUp()
     }
 
@@ -48,23 +47,23 @@ class GameActivity : Activity() {
 
     private fun initDrinksButtonTeamA(): MutableList<DrinkButton> {
         val drinksTeamA: MutableList<DrinkButton> = arrayListOf()
-        drinksTeamA.add(DrinkButton(teamAdrink1, 1, 1))
-        drinksTeamA.add(DrinkButton(teamAdrink2, 1, 2))
-        drinksTeamA.add(DrinkButton(teamAdrink3, 1, 3))
-        drinksTeamA.add(DrinkButton(teamAdrink4, 1, 4))
-        drinksTeamA.add(DrinkButton(teamAdrink5, 1, 5))
-        drinksTeamA.add(DrinkButton(teamAdrink6, 1, 6))
+        drinksTeamA.add(DrinkButton(teamAdrink1 , 1))
+        drinksTeamA.add(DrinkButton(teamAdrink2, 2))
+        drinksTeamA.add(DrinkButton(teamAdrink3, 3))
+        drinksTeamA.add(DrinkButton(teamAdrink4, 4))
+        drinksTeamA.add(DrinkButton(teamAdrink5, 5))
+        drinksTeamA.add(DrinkButton(teamAdrink6, 6))
         return drinksTeamA
     }
 
     private fun initDrinksButtonTeamB(): MutableList<DrinkButton> {
         val drinksTeamB: MutableList<DrinkButton> = arrayListOf()
-        drinksTeamB.add(DrinkButton(teamBdrink1, 1, 1))
-        drinksTeamB.add(DrinkButton(teamBdrink2, 1, 2))
-        drinksTeamB.add(DrinkButton(teamBdrink3, 1, 3))
-        drinksTeamB.add(DrinkButton(teamBdrink4, 1, 4))
-        drinksTeamB.add(DrinkButton(teamBdrink5, 1, 5))
-        drinksTeamB.add(DrinkButton(teamBdrink6, 1, 6))
+        drinksTeamB.add(DrinkButton(teamBdrink1,  1))
+        drinksTeamB.add(DrinkButton(teamBdrink2,  2))
+        drinksTeamB.add(DrinkButton(teamBdrink3,  3))
+        drinksTeamB.add(DrinkButton(teamBdrink4,  4))
+        drinksTeamB.add(DrinkButton(teamBdrink5,  5))
+        drinksTeamB.add(DrinkButton(teamBdrink6,  6))
         return drinksTeamB
     }
 
@@ -140,7 +139,7 @@ class GameActivity : Activity() {
     }
 
     private fun onDrinkSelected(drinkNumber: Int) {
-        match.currentDrinkSelected = match.getDrink(drinkNumber)
+        match.addDrink(drinkNumber)
         field.checkFieldConfiguration(match)
     }
 
@@ -160,12 +159,16 @@ class GameActivity : Activity() {
     }
 
     private fun onPlayerSelected(teamNumber: Int, playerNumber: Int) {
-        if(teamNumber == match.getCurrentTeam().number){
-            match.changePlayerCurrentPlayerTo(playerNumber)
-        } else if(match.hasDefender() && teamNumber == match.getOtherTeam().number && match.defenderPlayer()!!.number == playerNumber){
-            match.disabledDefender()
-        }else if(match.defenderAvailable() && teamNumber == match.getOtherTeam().number) {
-            match.changeDefenderPlayerTo(playerNumber)
+        when {
+            match.isAttackTeam(teamNumber) -> {
+                match.changePlayerCurrentPlayerTo(playerNumber)
+            }
+            match.isCurrentPlayerDefender(teamNumber,playerNumber) -> {
+                match.disabledDefender()
+            }
+            match.isDefendableButNotDefended(teamNumber) -> {
+                match.changeDefenderPlayerTo(playerNumber)
+            }
         }
 
         field.checkFieldConfiguration(match)
@@ -201,7 +204,7 @@ class GameActivity : Activity() {
     }
 
     private fun onFailedSelected() {
-        match.currentDrinkSelected = null
+        match.removeDrink()
         field.checkFieldConfiguration(match)
     }
 
@@ -212,7 +215,7 @@ class GameActivity : Activity() {
     }
 
     private fun onFailedDefenserbuttonSelected(){
-        match.hasFailedDefense =  !match.hasFailedDefense
+        match.revertDefenseFailed()
         field.checkFieldConfiguration(match)
     }
 
@@ -250,111 +253,3 @@ class GameActivity : Activity() {
 
 }
 //endregion
-
-/*f (match.hasDrinksToRemove()) {
-        if (match.needToRemoveDrinks()) {
-            Toast.makeText(this, "trois verres doivent être sélectionnés car deux fois même verre", Toast.LENGTH_LONG).show()
-            return false
-        }
-    } else {
-        if (isSuccess) {
-            if (selectedDrink == null) {
-
-                return false
-            }
-        } else {
-            if (selectedDrink != null) {
-                Toast.makeText(this, "Aucun verre ne doit être sélectionné pour shot raté", Toast.LENGTH_LONG).show()
-                return false
-            }
-        }
-    }*/
-
-
-/*private fun onDrinkSelected(drinkNumber: Int) {
-   match.currentDrinkSelected = match.getDrink(drinkNumber)*/
-/* if (match.drinksDueToSameDrink != null) {
-     if (!match.drinksDueToSameDrink!!.contains(drinkNumber)) {
-         if (match.drinksDueToSameDrink!!.size == match.NUMBER_DRINKS_WHEN_DOUBLE) {
-             match.drinksDueToSameDrink!!.removeAt(0)
-             match.drinksDueToSameDrink!!.add(drinkNumber)
-             //resetAllColorForTeams()
-             for (drinkDueToSameDrink in match.drinksDueToSameDrink!!) {
-                 if (match.currentPlayerPlaying.teamNumber == 1) {
-                     //this.drinksTeamB[drinkDueToSameDrink - 1].setBackgroundResource(R.drawable.rounded_cirle_purple)
-                 } else {
-                     //this.drinksTeamA[drinkDueToSameDrink - 1].setBackgroundResource(R.drawable.rounded_cirle_purple)
-                 }
-             }
-         }
-         if (match.drinksDueToSameDrink!!.size != match.NUMBER_DRINKS_WHEN_DOUBLE) {
-             match.drinksDueToSameDrink!!.add(drinkNumber)
-             drinkButton.setBackgroundResource(R.drawable.rounded_cirle_purple)
-         }
-     }
- } else {
-     match.changeDrinkSelected(drinkNumber)
-     isSuccess = true
-     drinkButton.setBackgroundResource(R.drawable.rounded_cirle_green)
-     imageButtonFailed.setBackgroundResource(R.drawable.rounded_cirle)
-     /*if (selectedDrink != null) {
-         if (match.needToRemoveDrinks() && selectedDrink == drinkButton) {
-             changeDrawable(R.drawable.rounded_cirle_purple)
-         }
-         if (scoredDrink(selectedDrink!!)) {
-             changeDrawable(R.drawable.rounded_cirle_purple)
-         }
-         if (!scoredDrink(selectedDrink!!)) {
-             changeDrawable(R.drawable.rounded_cirle)
-         }
-     }
-     selectedDrink = drinkButton*/
- }*/
-
-/*private fun scoredDrink(drinkButton: Button): Boolean {
-    return drinksScored.contains(drinkButton)
-}
-
-private fun isFinished(): Boolean {
-    return false
-}*/
-
-/*private fun drinkScored() {
-    if (selectedDrink != null && !drinksScored.contains(selectedDrink!!)) {
-        drinksScored.add(selectedDrink!!)
-    }
-    selectedDrink?.setBackgroundResource(R.drawable.rounded_cirle_purple)
-}*/
-
-/* private fun checkForImpactOfShot() {
-    if (isSuccess) {
-        match.nbShotSucced += 1
-    }
-
-    match.addShot(isSuccess)
-
-    if (match.drinkNumberScored != null) {
-        if (match.drinkNumberScored == match.currentDrinkSelected!!.number) {
-            match.drinksDueToSameDrink = arrayListOf()
-            //drinkNotDisplay()
-        }
-    }
-    match.drinkNumberScored = match.currentDrinkSelected!!.number
-    //drinkScored()*/
-
-/*if (isValidChoice()) {
-        if (match.drinksDueToSameDrink?.size == match.NUMBER_DRINKS_WHEN_DOUBLE) {
-
-        } else {
-            match.nbShots -= 1
-            checkForImpactOfShot()
-            changePlayer()
-            if (match.nbShots == 0) {
-                if (match.nbShotSucced != 2) {
-                    changeTeaam()
-                }
-                match.nbShotSucced = 0
-                match.nbShots = 2
-            }
-        }
-    }*/

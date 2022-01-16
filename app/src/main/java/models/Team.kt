@@ -1,5 +1,7 @@
 package models
 
+import models.exception.InvalidPlayerNumberException
+import models.exception.NoPlayerException
 import java.math.BigDecimal
 
 class Team(
@@ -10,72 +12,59 @@ class Team(
     var drinks: MutableList<Drink> = arrayListOf()
 ) {
 
-    var redemptionCount:Int = 6
+    var redemptionCount: Int = 6
 
-    fun init(player1Name:String,player2Name:String){
+    fun init(player1Name: String, player2Name: String) {
         this.addPlayer(Player(BigDecimal(1), player1Name, 1, this.number))
         this.addPlayer(Player(BigDecimal(2), player2Name, 2, this.number))
         this.initDrinks()
     }
 
-    fun addPlayer(player: Player) {
+    private fun addPlayer(player: Player) {
         this.players.add(player)
     }
 
 
-    fun initDrinks() {
-        this.drinks.add(Drink(BigDecimal(1), 1,number))
-        this.drinks.add(Drink(BigDecimal(2), 2,number))
-        this.drinks.add(Drink(BigDecimal(3), 3,number))
-        this.drinks.add(Drink(BigDecimal(4), 4,number))
-        this.drinks.add(Drink(BigDecimal(5), 5,number))
-        this.drinks.add(Drink(BigDecimal(6), 6,number))
-    }
-
-    fun getOtherPlayer(playerNumber: Int): Player {
-        if (!getPlayerByNumber(playerNumber).trickShotAvailable) {
-            for (player in this.players) {
-                if (player.number != playerNumber) {
-                    return player
-                }
-            }
-            throw Exception("player not found")
-        } else {
-            return getPlayerByNumber(playerNumber)
-        }
+    private fun initDrinks() {
+        this.drinks.add(Drink(BigDecimal(1), 1, number))
+        this.drinks.add(Drink(BigDecimal(2), 2, number))
+        this.drinks.add(Drink(BigDecimal(3), 3, number))
+        this.drinks.add(Drink(BigDecimal(4), 4, number))
+        this.drinks.add(Drink(BigDecimal(5), 5, number))
+        this.drinks.add(Drink(BigDecimal(6), 6, number))
     }
 
     fun getOtherPlayerOnly(playerNumber: Int): Player {
-        for (player in this.players) {
-            if (player.number != playerNumber) {
-                return player
-            }
+        if(this.players.isEmpty()){
+            throw NoPlayerException()
         }
-        throw Exception("player not found")
+        checkForValidNumber(playerNumber)
+        return this.players.first { player -> player.number != playerNumber }
+    }
+
+    private fun checkForValidNumber(playerNumber: Int) {
+        val isValid: Boolean = this.players
+            .filter { player -> player.number == playerNumber }
+            .count() > 0
+        if (!isValid) {
+            throw InvalidPlayerNumberException(playerNumber)
+        }
     }
 
     fun getPlayerByNumber(number: Int): Player {
-        for (player in this.players) {
-            if (player.number == number) {
-                return player
-            }
-        }
-        return players[number - 1]
+        return this.players.first{ player -> player.number == number }
     }
 
     fun getDrinkByNumber(number: Int): Drink {
-        for (drink in this.drinks) {
-            if (drink.number == number) {
-                return drink
-            }
-        }
-        throw Exception("drink not found")
+        return this.drinks.first { drink -> drink.number == number }
     }
 
-    fun resetAllPlayers(){
-        for(player in this.players){
-            player.resetTurn()
-        }
+    fun nbDrinksNotDone():Int{
+        return drinks.filter { drink -> !drink.isDone  }.count()
+    }
+
+    fun resetAllPlayers() {
+        players.forEach { player -> player.resetTurn() }
     }
 
     fun allDrinksAreDone(): Boolean {

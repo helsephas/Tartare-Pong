@@ -1,8 +1,6 @@
 package ui
 
-import models.Drink
 import models.Match
-import models.Player
 
 class FieldSide(
     var teamNumber: Int, var playersButton: MutableList<PlayerButton> = arrayListOf(),
@@ -10,27 +8,27 @@ class FieldSide(
 
 ) {
 
-    fun checkOtherPlayersState(match: Match) {
+    fun checkDefenserPlayersStates(match: Match) {
         this.playersButton.forEach { playerButton ->
-            playerButton.checkOtherTeamCondition(match)
+            playerButton.checkDefenserPlayerState(match)
         }
     }
 
-    fun desactivateDrinks(match: Match) {
+    fun checkAttackTeamDrinksState(match: Match) {
         this.drinksButton.forEach { drinkButton ->
-            drinkButton.checkDisableCondition(match)
+            drinkButton.checkAttackTeamDrinkState(match)
         }
     }
 
-    fun checkPlayersState(match: Match) {
+    fun checkAttackTeamPlayerState(match: Match) {
         this.playersButton.forEach { playerButton ->
-            playerButton.checkButtonConditions(match)
+            playerButton.checkAttackTeamPlayerState(match)
         }
     }
 
-    fun checkDrinksState(match: Match) {
+    fun checkDefenseDrinksState(match: Match) {
         this.drinksButton.forEach { drinkButton ->
-            drinkButton.checkButtonCondition(match)
+            drinkButton.checkDefenseDrinkState(match)
         }
     }
 }

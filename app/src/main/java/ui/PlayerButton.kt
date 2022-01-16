@@ -7,10 +7,42 @@ import models.Player
 
 class PlayerButton(var button: Button, var playerNumber: Int) {
 
+    fun checkAttackTeamPlayerState(match: Match) {
+        if (match.isPlayerCurrentPlayer(playerNumber)) {
+            activateShot()
+        } else {
+            when {
+                match.hasOtherPlayerTrickshotAvailable(playerNumber) -> {
+                    selectableForTrickShot()
+                }
+                match.hasSecondPlayerNotAlreadyPlayed(playerNumber) -> {
+                    selectable()
+                }
+                else -> {
+                    desactivateSelection()
+                }
+            }
+        }
+
+    }
+
+    fun checkDefenserPlayerState(match: Match) {
+        when {
+            match.defenderSelectedForDefense(playerNumber) -> {
+                selectedForDefense()
+            }
+            match.defenderAvailable() -> {
+                selectableForDefense()
+            }
+            else -> {
+                desactivateSelection()
+            }
+        }
+    }
 
     private fun activateShot() {
         this.button.setBackgroundColor(Color.GREEN)
-        button.isEnabled = true
+        button.isEnabled = false
     }
 
     private fun selectable() {
@@ -23,47 +55,20 @@ class PlayerButton(var button: Button, var playerNumber: Int) {
         button.isEnabled = true
     }
 
-    private fun selectableForDefense(){
+    private fun selectableForDefense() {
         this.button.setBackgroundColor(Color.CYAN)
         button.isEnabled = true
     }
 
-    private fun selectedForDefense(){
+    private fun selectedForDefense() {
         this.button.setBackgroundColor(Color.MAGENTA)
         button.isEnabled = true
     }
 
-    fun checkOtherTeamCondition(match: Match){
-        if(match.hasDefender() && match.defenderPlayer()?.number == playerNumber){
-            selectedForDefense()
-        } else if(match.defenderAvailable()){
-            selectableForDefense()
-        } else {
-            desactivateSelection()
-        }
-    }
-
-    fun desactivateSelection() {
+    private fun desactivateSelection() {
         this.button.setBackgroundColor(Color.RED)
         button.isEnabled = false
     }
 
-    fun checkButtonConditions(match: Match) {
-        val currentPlayer: Player = match.currentPlayerPlaying
-        val otherPlayer:Player = match.getOtherPlayer()
-        val nbShots:Int = match.nbShots
 
-        if (currentPlayer.number == playerNumber) {
-            activateShot()
-        } else {
-            if (playerNumber == otherPlayer.number && otherPlayer.trickShotAvailable) {
-                selectableForTrickShot()
-            } else if (playerNumber == otherPlayer.number && !otherPlayer.hasPlayed) {
-                selectable()
-            } else {
-                desactivateSelection()
-            }
-        }
-
-    }
 }

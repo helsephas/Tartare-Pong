@@ -18,38 +18,38 @@ class Field(private var fieldSides: MutableList<FieldSide> = arrayListOf(), priv
     }
 
     fun checkFieldConfiguration(match: Match){
-        currentTeamPlaying(match)
-        otherTeamPlaying(match)
-        checkShotButtonsConditions(match)
-        checkFailedButtonCondition(match)
+        attackTeamConfigfuration(match)
+        defenseTeamConfiguration(match)
+        checkShotButtonsState(match)
+        checkFailedButtonState(match)
         checkDefenseFailedButtonConditions(match)
     }
 
-    private fun currentTeamPlaying(match: Match){
-        getFieldSide(match.getCurrentTeam().number).desactivateDrinks(match)
-        getFieldSide(match.getCurrentTeam().number).checkPlayersState(match)
+    private fun attackTeamConfigfuration(match: Match){
+        getFieldSide(match.getAttackTeam().number).checkAttackTeamDrinksState(match)
+        getFieldSide(match.getAttackTeam().number).checkAttackTeamPlayerState(match)
     }
 
-    private fun otherTeamPlaying(match: Match){
-        getFieldSide(match.getOtherTeam().number).checkOtherPlayersState(match)
-        getFieldSide(match.getOtherTeam().number).checkDrinksState(match)
+    private fun defenseTeamConfiguration(match: Match){
+        getFieldSide(match.getDefenseTeam().number).checkDefenserPlayersStates(match)
+        getFieldSide(match.getDefenseTeam().number).checkDefenseDrinksState(match)
     }
 
-    private fun checkShotButtonsConditions(match: Match){
+    private fun checkShotButtonsState(match: Match){
         shotButtons.forEach {
-            shotButton ->  shotButton.checkConditions(match)
+            shotButton ->  shotButton.checkShotButtonState(match)
         }
     }
 
-    private fun checkFailedButtonCondition(match: Match){
-        failedButton.checkConditions(match)
+    private fun checkFailedButtonState(match: Match){
+        failedButton.checkState(match)
     }
 
     private fun checkDefenseFailedButtonConditions(match: Match){
-        defenseFailedButton.checkButtonCondition(match)
+        defenseFailedButton.checkButtonState(match)
     }
 
     private fun getFieldSide(teamNumber: Int):FieldSide{
-        return fieldSides.filter { fieldSide  -> fieldSide.teamNumber == teamNumber}.toList()[0]
+        return fieldSides.filter{ fieldSide  -> fieldSide.teamNumber == teamNumber}.toList().first()
     }
 }

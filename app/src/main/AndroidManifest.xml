@@ -8,9 +8,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
-        <activity android:name=".FailedOptionsActivity"></activity>
-        <activity android:name=".SuccessOptionsActivity" /> <!-- android:theme="@style/Theme.TartarePong" -->
-        <activity android:name=".GameActivity">
+        <!-- android:theme="@style/Theme.TartarePong" -->
+        <activity android:name=".GameActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
