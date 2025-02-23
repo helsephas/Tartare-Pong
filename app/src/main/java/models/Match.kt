@@ -1,6 +1,13 @@
 package models
 
-import models.shots.*
+import models.shots.AirShot
+import models.shots.BounceShot
+import models.shots.CallShot
+import models.shots.Shot
+import models.shots.ShotImpact
+import models.shots.ShotType
+import models.shots.SimpleShot
+import models.shots.TrickShot
 import java.math.BigDecimal
 
 class Match(
@@ -11,19 +18,14 @@ class Match(
     lateinit var currentPlayerPlaying: Player
     var currentDrinkSelected: Drink? = null
     var currentShotType: ShotType = ShotType.SIMPLE
-    var secondShotType: ShotType? = null
+
+    //var secondShotType: ShotType? = null
     private var defenderPlayer: Player? = null
     var hasFailedDefense: Boolean = false
-    var hasDoubleShot: Boolean = false
     var shotImpact: ShotImpact? = null
-
-    private var nbShotSucced: Int = 0
-    private var drinkNumberScored: Int? = null
-    var nbShots: Int = 2
-
     private var firstScoredPlayer: Player? = null
-
-    var turnNumber = 1
+    var turnNumber: Int = 1
+    private var hasImpactToTreat: Boolean = false
 
     fun startGame(): Match {
         addTeams()
@@ -33,11 +35,19 @@ class Match(
 
     //region shot
     fun addShot() {
-        addShotToMatch()
-        changeCurrentPlayerState()
-        changePlayer()
-        setCurrentShotTypeAccordingToCurrentPlayer()
-        println(this.toString())
+        if (!hasImpactToTreat) {
+            addShotToMatch()
+            hasImpactToTreat = checkForShotImpact()
+            if (!hasImpactToTreat) {
+                changeCurrentPlayerState()
+                if (getAttackTeam().allPlayersHasPlayed() && !shotImpact!!.hasToReplay) {
+                    changeTeam()
+                } else {
+                    changePlayer()
+                    setCurrentShotTypeAccordingToCurrentPlayer()
+                }
+            }
+        }
     }
 
     private fun addShotToMatch() {
@@ -47,26 +57,43 @@ class Match(
             ShotType.TRICK_SHOT -> {
                 this.shots.add(TrickShot(currentPlayerPlaying, currentDrinkSelected, turnNumber))
             }
+
             ShotType.AIR_SHOT -> {
                 this.shots.add(AirShot(currentPlayerPlaying, defenderPlayer, turnNumber))
             }
+
             ShotType.BOUNCE -> {
-                this.shots.add(BounceShot(currentPlayerPlaying, currentDrinkSelected, defenderPlayer, turnNumber,hasFailedDefense))
+                this.shots.add(BounceShot(currentPlayerPlaying, currentDrinkSelected, defenderPlayer, turnNumber, hasFailedDefense))
             }
         }
     }
 
 
     private fun checkForShotImpact(): Boolean {
-        var lastShot: Shot = getLastShot()
-        shotImpact = ShotImpact(lastShot)
-        return shotImpact!!.impactShot()
+        if (hasOtherShotThisTurn()) {
+            shotImpact = ShotImpact(this)
+            return shotImpact!!.impactShot()
+        }
+        return false
     }
 
-    fun containsValidsChoice(): Boolean {
-        return true
+    fun hasImpactedShotToTreat(teamNumber: Int): Boolean {
+        return getTeamByNumber(teamNumber).drinksTeamImpacted.size > 0
     }
-    private fun getLastShot(): Shot {
+
+    fun hasImpactedShotToTreat(): Boolean {
+        return getAttackTeam().drinksTeamImpacted.size > 0 || getDefenseTeam().drinksTeamImpacted.size > 0
+    }
+
+    fun getOtherShotOfThisTurn(): Shot {
+        return this.shots.first { shot -> shot.turnNumber == this.turnNumber }
+    }
+
+    private fun hasOtherShotThisTurn(): Boolean {
+        return this.shots.count { shot -> shot.turnNumber == this.turnNumber && !shot.shotType.isTrickShot() } == 2
+    }
+
+    fun getLastShot(): Shot {
         return this.shots.last()
     }
 
@@ -78,6 +105,14 @@ class Match(
         }
     }
 
+    fun changeShotType(shotType: ShotType) {
+        if (shotType == ShotType.AIR_SHOT) {
+            removeDrink()
+        }
+        disabledDefender()
+        currentShotType = shotType
+    }
+
     fun currentShotTypeIs(shotType: ShotType): Boolean {
         return currentShotType == shotType;
     }
@@ -86,10 +121,63 @@ class Match(
         return !hasCurrentPlayerHasTrickShot() && shotType != ShotType.TRICK_SHOT && shotType != ShotType.CALL || (currentDrinkIsCallable() && shotType == ShotType.CALL)
     }
 
+    fun isTwoShotsOnSameDrinksScored(): Boolean {
+        val lastShot: Shot = getLastShot()
+        val otherShot: Shot = getOtherShotOfThisTurn()
+        return lastShot.isSuccess && otherShot.isSuccess && getLastShotDrinkNumber() == getOtherShotDrinkNumber()
+    }
+
+    private fun getLastShotDrinkNumber(): Int {
+        val lastShot: Shot = getLastShot()
+        return determineDrinkNumberForShot(lastShot)
+    }
+
+    private fun getOtherShotDrinkNumber(): Int {
+        val otherShot: Shot = getOtherShotOfThisTurn()
+        return determineDrinkNumberForShot(otherShot)
+    }
+
+    private fun determineDrinkNumberForShot(shot: Shot): Int {
+        when (shot.shotType) {
+            ShotType.SIMPLE -> {
+                val simpleShot = shot as SimpleShot
+                return simpleShot.drink!!.number
+            }
+
+            ShotType.BOUNCE -> {
+                val bounceShot = shot as BounceShot
+                return bounceShot.drink!!.number
+            }
+
+            ShotType.CALL -> {
+                val callShot = shot as CallShot
+                return callShot.drink!!.number
+            }
+
+            ShotType.AIR_SHOT -> {
+                throw RuntimeException("Impossible case")
+            }
+
+            ShotType.TRICK_SHOT -> {
+                val trickShot = shot as TrickShot
+                return trickShot.drink!!.number
+            }
+        }
+    }
+
     //endregion
 
 
     //region player
+
+    private fun hasOtherPlayerAlreadyScoredThisTurn(): Boolean {
+        return !this.shots.none { shot -> shot.turnNumber == turnNumber && shot.shotedBy.number != currentPlayerPlaying.number }
+    }
+
+    fun has2PlayersAlreadyPlayed(): Boolean {
+        return hasCurrentPlayerHasTrickShot() && hasOtherPlayerAlreadyScoredThisTurn()
+    }
+
     fun currentPlayerHasAlreadyPlayed(): Boolean {
         return hasOnePlayerScored() && currentPlayerPlaying.number == firstScoredPlayer!!.number
     }
@@ -115,13 +203,12 @@ class Match(
         return defenderAvailable() && teamNumber == getDefenseTeam().number
     }
 
-
-
     fun changeDefenderPlayerTo(playerNumber: Int) {
         defenderPlayer = getDefenseTeam().getPlayerByNumber(playerNumber)
     }
 
     fun disabledDefender() {
+        hasFailedDefense = false
         defenderPlayer = null
     }
 
@@ -129,25 +216,34 @@ class Match(
         return defenderAvailable() && defenderPlayer != null
     }
 
-    fun isPlayerCurrentPlayer(playerNumber:Int):Boolean{
+    fun isPlayerCurrentPlayer(playerNumber: Int): Boolean {
         return currentPlayerPlaying.number == playerNumber
     }
 
-    fun hasOtherPlayerTrickshotAvailable(playerNumber:Int): Boolean {
-        val otherPlayer: Player = getOtherAttackant()
-        return playerNumber == otherPlayer.number && otherPlayer.trickShotAvailable
+    fun hasOtherPlayerTrickshotAvailable(playerNumber: Int): Boolean {
+        return try {
+            val otherPlayer: Player = getOtherAttackant()
+            playerNumber == otherPlayer.number && otherPlayer.trickShotAvailable
+
+        } catch (e: NoSuchElementException) {
+            false
+        }
     }
 
-    fun hasSecondPlayerNotAlreadyPlayed(playerNumber:Int): Boolean {
-        val otherPlayer: Player = getOtherAttackant()
-        return playerNumber == otherPlayer.number && !otherPlayer.hasPlayed
+    fun hasSecondPlayerNotAlreadyPlayed(playerNumber: Int): Boolean {
+        return try {
+            val otherPlayer: Player = getOtherAttackant()
+            playerNumber == otherPlayer.number && !otherPlayer.hasPlayed
+        } catch (e: NoSuchElementException) {
+            false
+        }
     }
 
     fun defenderAvailable(): Boolean {
         return currentShotType.defendable()
     }
 
-    fun defenderSelectedForDefense(playerNumber:Int):Boolean{
+    fun defenderSelectedForDefense(playerNumber: Int): Boolean {
         return hasDefender() && defenderPlayer()?.number == playerNumber
     }
 
@@ -155,22 +251,20 @@ class Match(
         return this.defenderPlayer
     }
 
-    fun revertDefenseFailed(){
-        hasFailedDefense =  !hasFailedDefense
+    fun revertDefenseFailed() {
+        hasFailedDefense = !hasFailedDefense
     }
 
     fun changeTeam() {
-        if (nbShots == 0) {
-            getAttackTeam().resetAllPlayers()
-            val otherTeam: Team = getDefenseTeam()
-            currentPlayerPlaying = otherTeam.getPlayerByNumber(1)
-            nbShots = 2
-            firstScoredPlayer = null
-            turnNumber += 1
-        }
+        getAttackTeam().resetAllPlayers()
+        val otherTeam: Team = getDefenseTeam()
+        currentPlayerPlaying = otherTeam.getPlayerByNumber(1)
+        setCurrentShotTypeAccordingToCurrentPlayer()
+        firstScoredPlayer = null
+        turnNumber += 1
     }
 
-    fun isAttackTeam(teamNumber:Int):Boolean{
+    fun isAttackTeam(teamNumber: Int): Boolean {
         return teamNumber == getAttackTeam().number
     }
 
@@ -188,23 +282,30 @@ class Match(
     }
 
     private fun getOtherAttackant(): Player {
-        return getTeamByNumber(currentPlayerPlaying.teamNumber).getOtherPlayerOnly(currentPlayerPlaying.number)
+        return try {
+            getTeamByNumber(currentPlayerPlaying.teamNumber).getOtherPlayerOnly(currentPlayerPlaying.number)
+        } catch (e: NoSuchElementException) {
+            currentPlayerPlaying
+        }
     }
 
     private fun changeCurrentPlayerState() {
-        val lastShot:Shot = getLastShot()
-        if(lastShot.isSuccess){
-            if (lastShot.shotType != ShotType.TRICK_SHOT){
+        val lastShot: Shot = getLastShot()
+        if (!lastShot.isSuccess && (lastShot.shotType != ShotType.TRICK_SHOT && lastShot.shotType != ShotType.AIR_SHOT)) {
+            changeOtherAttackToPlayedState()
+            currentPlayerPlaying.changeToTrickShot()
+        } else {
+            changeOtherAttackToPlayedState()
+            currentPlayerPlaying.changeToPlayedState()
+            if (lastShot.isSuccess) {
                 firstScoredPlayer = currentPlayerPlaying
             }
-            currentPlayerPlaying.changeToPlayedState()
-        } else {
-            if ((lastShot.shotType != ShotType.TRICK_SHOT && lastShot.shotType != ShotType.AIR_SHOT)) {
-                currentPlayerPlaying.changeToTrickShot()
-            }
         }
-        if (lastShot.shotType != ShotType.TRICK_SHOT) {
-            nbShots -= 1
+    }
+
+    private fun changeOtherAttackToPlayedState() {
+        if (getOtherAttackant().trickShotAvailable) {
+            getOtherAttackant().changeToPlayedState()
         }
     }
 
@@ -254,24 +355,27 @@ class Match(
         return isDrinkSelected() && isDrinkCallable(currentDrinkSelected!!.number)
     }
 
-    fun isDrinkTemporalyScored(drinkNumber: Int):Boolean{
+    fun isDrinkTemporalyScored(drinkNumber: Int): Boolean {
         return isDrinkScored(drinkNumber) && !isDrinkNumberSelected(drinkNumber)
     }
 
     private fun isDrinkCallable(drinkNumber: Int): Boolean {
         if ((getDefenseTeam().nbDrinksNotDone() > 4) ||
-                (drinkNumber == 3 || drinkNumber == 2 || drinkNumber == 5) ){
+            (drinkNumber == 3 || drinkNumber == 2 || drinkNumber == 5)
+        ) {
             return false
         }
         return if (drinkNumber == 1
             && getDrink(2).isDone
             && getDrink(3).isDone
-            && !getDrink(5).isDone) {
+            && !getDrink(5).isDone
+        ) {
             true
         } else if (drinkNumber == 4
             && getDrink(2).isDone
             && getDrink(5).isDone
-            && !getDrink(3).isDone) {
+            && !getDrink(3).isDone
+        ) {
             true
         } else (drinkNumber == 6
                 && getDrink(3).isDone
@@ -283,8 +387,23 @@ class Match(
         return isDrinkScoredDefinitivelyScored(drinkNumber, getAttackTeam().number)
     }
 
+    fun isDrinkScoredScoredThisTurnForCurrentTeam(drinkNumber: Int): Boolean {
+        return isDrinkScoredDefinitivelyScoredThisTurn(drinkNumber, getAttackTeam().number)
+    }
+
     fun isDrinkScoredDefinitivelyScoredForOtherTeam(drinkNumber: Int): Boolean {
         return isDrinkScoredDefinitivelyScored(drinkNumber, getDefenseTeam().number)
+    }
+
+    fun isDrinkSelectedForImpact(teamNumber: Int, drinkNumber: Int): Boolean {
+        return getTeamByNumber(teamNumber).drinksTeamImpacted.contains(drinkNumber)
+    }
+
+    fun selectDrinkForImpact(teamNumber: Int, drinkNumber: Int) {
+        if (getTeamByNumber(teamNumber).drinksTeamImpacted.isNotEmpty()) {
+            getTeamByNumber(teamNumber).drinksTeamImpacted.removeAt(getTeamByNumber(teamNumber).drinksTeamImpacted.lastIndex)
+        }
+        getTeamByNumber(teamNumber).drinksTeamImpacted.add(drinkNumber)
     }
 
     private fun isDrinkScoredDefinitivelyScored(drinkNumber: Int, teamNumber: Int): Boolean {
@@ -297,6 +416,15 @@ class Match(
             .isNotEmpty()
     }
 
+    private fun isDrinkScoredDefinitivelyScoredThisTurn(drinkNumber: Int, teamNumber: Int): Boolean {
+        return this.shots
+            .filter { shot ->
+                shot.isSuccess && shot.turnNumber == turnNumber
+                        && shot.shotedBy.teamNumber == teamNumber &&
+                        getDrinkForShot(shot).number == drinkNumber
+            }.toList()
+            .isNotEmpty()
+    }
 
     fun isDrinkScored(drinkNumber: Int): Boolean {
         val shotsForCurrentTeam: ArrayList<Shot> = this.shots
@@ -331,12 +459,9 @@ class Match(
     //endregion
 
 
-
-
-
-
     override fun toString(): String {
-        return "Match(teams=$teams, shots=$shots, currentPlayerPlaying=$currentPlayerPlaying, currentDrinkSelected=$currentDrinkSelected, currentShotType=$currentShotType, defenderPlayer=$defenderPlayer, nbShotSucced=$nbShotSucced, drinkNumberScored=$drinkNumberScored, nbShots=$nbShots, firstScoredPlayer=$firstScoredPlayer, turnNumber=$turnNumber)"
+        //return "Match(teams=$teams, shots=$shots, currentPlayerPlaying=$currentPlayerPlaying, currentDrinkSelected=$currentDrinkSelected, currentShotType=$currentShotType, defenderPlayer=$defenderPlayer, nbShotSucced=$nbShotSucced, drinkNumberScored=$drinkNumberScored, nbShots=$nbShots, firstScoredPlayer=$firstScoredPlayer, turnNumber=$turnNumber)"
+        return ""
     }
 
 

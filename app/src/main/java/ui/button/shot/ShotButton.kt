@@ -1,8 +1,9 @@
-package ui
+package ui.button.shot
 
 import android.widget.Button
 import models.Match
 import models.shots.ShotType
+import ui.button.AbstractButton
 
 class ShotButton(override var button: Button, var shotType: ShotType) : AbstractButton(button) {
 
@@ -22,16 +23,20 @@ class ShotButton(override var button: Button, var shotType: ShotType) : Abstract
     }
 
     private fun checkState(match: Match) {
-        when {
-            match.currentShotTypeIs(this.shotType) -> {
-                selected()
-            }
-            match.isShotTypeAvailable(this.shotType)
-             -> {
-                basic()
-            }
-            else -> {
-                disabled()
+        if(match.hasImpactedShotToTreat()){
+            disabled()
+        } else {
+            when {
+                match.currentShotTypeIs(this.shotType) -> {
+                    selected()
+                }
+                match.isShotTypeAvailable(this.shotType)
+                -> {
+                    basic()
+                }
+                else -> {
+                    disabled()
+                }
             }
         }
     }

@@ -10,4 +10,6 @@
     <color name="green">#008000</color>
     <color name="magenta">#FFBB86FC</color>
     <color name="red">#FFF00F00</color>
+    <color name="yellow">#FFF0F000</color>
+    <color name="blue">#FF0000FF</color>
 </resources>

@@ -18,4 +18,8 @@ enum class ShotType {
     fun isAirShot():Boolean{
         return this == AIR_SHOT
     }
+
+    fun isTrickShot():Boolean{
+        return this == TRICK_SHOT
+    }
 }

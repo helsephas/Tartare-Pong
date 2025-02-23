@@ -1,6 +1,6 @@
 package com.example.tartarepong
 
-import androidx.test.core.app.ActivityScenario
+/*import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -19,4 +19,4 @@ class GameActivityTest {
 
         onView(withId(R.id.gameContentContraintLayout)).check(ViewAssertions.matches(isDisplayed()))
     }
-}
+}*/

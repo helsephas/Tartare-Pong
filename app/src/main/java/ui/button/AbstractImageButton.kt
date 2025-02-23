@@ -1,6 +1,5 @@
-package ui
+package ui.button
 
-import android.widget.Button
 import android.widget.ImageButton
 import com.example.tartarepong.R
 

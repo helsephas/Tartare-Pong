@@ -1,17 +1,21 @@
 package models.shots
 
-import junit.framework.TestCase
 import models.Player
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-class AirShotTest : TestCase() {
+class AirShotTest {
 
     private lateinit var airShot: AirShot
     private lateinit var player: Player
 
-    public override fun setUp() {
-        super.setUp()
+    @BeforeEach
+    fun setUp() {
         player = Player(BigDecimal(1),"name",1,1)
         airShot = AirShot(player,null,1)
     }

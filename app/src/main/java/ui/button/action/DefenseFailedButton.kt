@@ -1,8 +1,9 @@
-package ui
+package ui.button.action
 
 import android.widget.Button
 import com.example.tartarepong.R
 import models.Match
+import ui.button.AbstractButton
 
 class DefenseFailedButton(override var button: Button) : AbstractButton(button) {
 

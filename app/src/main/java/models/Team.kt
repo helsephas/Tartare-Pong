@@ -1,7 +1,5 @@
 package models
 
-import models.exception.InvalidPlayerNumberException
-import models.exception.NoPlayerException
 import java.math.BigDecimal
 
 class Team(
@@ -13,6 +11,7 @@ class Team(
 ) {
 
     var redemptionCount: Int = 6
+    var drinksTeamImpacted: MutableList<Int> = arrayListOf()
 
     fun init(player1Name: String, player2Name: String) {
         this.addPlayer(Player(BigDecimal(1), player1Name, 1, this.number))
@@ -35,20 +34,7 @@ class Team(
     }
 
     fun getOtherPlayerOnly(playerNumber: Int): Player {
-        if(this.players.isEmpty()){
-            throw NoPlayerException()
-        }
-        checkForValidNumber(playerNumber)
-        return this.players.first { player -> player.number != playerNumber }
-    }
-
-    private fun checkForValidNumber(playerNumber: Int) {
-        val isValid: Boolean = this.players
-            .filter { player -> player.number == playerNumber }
-            .count() > 0
-        if (!isValid) {
-            throw InvalidPlayerNumberException(playerNumber)
-        }
+        return this.players.first{ player -> player.number != playerNumber && !player.hasPlayed }
     }
 
     fun getPlayerByNumber(number: Int): Player {
@@ -67,10 +53,14 @@ class Team(
         players.forEach { player -> player.resetTurn() }
     }
 
+    fun allPlayersHasPlayed(): Boolean {
+        return players.filter { player -> player.hasPlayed }.size == 2
+    }
+
     fun allDrinksAreDone(): Boolean {
         var nbDrinksDone = 0
         for (drink in drinks) {
-            if (!drink.isDone) {
+            if (drink.isDone) {
                 nbDrinksDone += 1
             }
         }
@@ -89,7 +79,7 @@ class Team(
     }
 
     override fun toString(): String {
-        return "Team(id=$id, name='$name', number=$number, players=$players, drinks=$drinks)\b"
+        return "Team(id=$id, name='$name', number=$number, players=$players, drinks=$drinks)"
     }
 
 

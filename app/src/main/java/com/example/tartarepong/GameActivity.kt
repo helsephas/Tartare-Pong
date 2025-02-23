@@ -3,29 +3,43 @@ package com.example.tartarepong
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
-import kotlinx.android.synthetic.main.game_activity.*
+import com.example.tartarepong.databinding.GameActivityBinding
 import models.Match
-import models.exception.NoDrinkSelectedException
 import models.shots.ShotType
-import ui.*
+import ui.button.action.DefenseFailedButton
+import ui.button.action.FailedButton
+import ui.button.action.NextTurnButton
+import ui.button.drink.DrinkButton
+import ui.button.player.PlayerButton
+import ui.button.shot.ShotButton
+import ui.field.Field
 
 class GameActivity : Activity() {
 
     var match: Match = Match().startGame()
     var field: Field = Field()
+    private lateinit var gameActivityBinding: GameActivityBinding
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.game_activity)
+        gameActivityBinding = GameActivityBinding.inflate(layoutInflater)
+        val view = gameActivityBinding.root
+        setContentView(view)
         setUp()
     }
 
 
     private fun setUp() {
-        this.field.init(initPlayersButtonAList(), initPlayersButtonBList(), initDrinksButtonTeamA(), initDrinksButtonTeamB(), initShotsButton(), FailedButton(imageButtonFailed),DefenseFailedButton(buttonFailedDefense))
+        this.field.init(
+            initPlayersButtonAList(), initPlayersButtonBList(), initDrinksButtonTeamA(), initDrinksButtonTeamB(),
+            initShotsButton(), FailedButton(gameActivityBinding.imageButtonFailed), DefenseFailedButton(gameActivityBinding.buttonFailedDefense), NextTurnButton(gameActivityBinding.buttonChangeTeam)
+        )
         this.field.checkFieldConfiguration(match)
         linkPlayersButtons()
         initListeners()
+        gameActivityBinding.imageButtonFault.setOnClickListener {
+            this.field.checkFieldConfiguration(match)
+        }
     }
 
 
@@ -33,47 +47,47 @@ class GameActivity : Activity() {
 
     private fun initPlayersButtonAList(): MutableList<PlayerButton> {
         val playersButton: MutableList<PlayerButton> = arrayListOf()
-        playersButton.add(PlayerButton(buttonPlayer1, 1))
-        playersButton.add(PlayerButton(buttonPlayer2, 2))
+        playersButton.add(PlayerButton(gameActivityBinding.buttonPlayer1, 1))
+        playersButton.add(PlayerButton(gameActivityBinding.buttonPlayer2, 2))
         return playersButton
     }
 
     private fun initPlayersButtonBList(): MutableList<PlayerButton> {
         val playersButton: MutableList<PlayerButton> = arrayListOf()
-        playersButton.add(PlayerButton(buttonPlayer3, 1))
-        playersButton.add(PlayerButton(buttonPlayer4, 2))
+        playersButton.add(PlayerButton(gameActivityBinding.buttonPlayer3, 1))
+        playersButton.add(PlayerButton(gameActivityBinding.buttonPlayer4, 2))
         return playersButton
     }
 
     private fun initDrinksButtonTeamA(): MutableList<DrinkButton> {
         val drinksTeamA: MutableList<DrinkButton> = arrayListOf()
-        drinksTeamA.add(DrinkButton(teamAdrink1 , 1))
-        drinksTeamA.add(DrinkButton(teamAdrink2, 2))
-        drinksTeamA.add(DrinkButton(teamAdrink3, 3))
-        drinksTeamA.add(DrinkButton(teamAdrink4, 4))
-        drinksTeamA.add(DrinkButton(teamAdrink5, 5))
-        drinksTeamA.add(DrinkButton(teamAdrink6, 6))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink1, 1))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink2, 2))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink3, 3))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink4, 4))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink5, 5))
+        drinksTeamA.add(DrinkButton( gameActivityBinding.teamAdrink6, 6))
         return drinksTeamA
     }
 
     private fun initDrinksButtonTeamB(): MutableList<DrinkButton> {
         val drinksTeamB: MutableList<DrinkButton> = arrayListOf()
-        drinksTeamB.add(DrinkButton(teamBdrink1,  1))
-        drinksTeamB.add(DrinkButton(teamBdrink2,  2))
-        drinksTeamB.add(DrinkButton(teamBdrink3,  3))
-        drinksTeamB.add(DrinkButton(teamBdrink4,  4))
-        drinksTeamB.add(DrinkButton(teamBdrink5,  5))
-        drinksTeamB.add(DrinkButton(teamBdrink6,  6))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink1, 1))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink2, 2))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink3, 3))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink4, 4))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink5, 5))
+        drinksTeamB.add(DrinkButton(gameActivityBinding.teamBdrink6, 6))
         return drinksTeamB
     }
 
     private fun initShotsButton(): MutableList<ShotButton> {
         val shotsButton: MutableList<ShotButton> = arrayListOf()
-        shotsButton.add(ShotButton(buttonSimpleShot, ShotType.SIMPLE))
-        shotsButton.add(ShotButton(buttonAirShot, ShotType.AIR_SHOT))
-        shotsButton.add(ShotButton(buttonTrickShot, ShotType.TRICK_SHOT))
-        shotsButton.add(ShotButton(buttonBounceShot, ShotType.BOUNCE))
-        shotsButton.add(ShotButton(buttonCallShot, ShotType.CALL))
+        shotsButton.add(ShotButton(gameActivityBinding.buttonSimpleShot, ShotType.SIMPLE))
+        shotsButton.add(ShotButton(gameActivityBinding.buttonAirShot, ShotType.AIR_SHOT))
+        shotsButton.add(ShotButton(gameActivityBinding.buttonTrickShot, ShotType.TRICK_SHOT))
+        shotsButton.add(ShotButton(gameActivityBinding.buttonBounceShot, ShotType.BOUNCE))
+        shotsButton.add(ShotButton(gameActivityBinding.buttonCallShot, ShotType.CALL))
         return shotsButton
     }
 
@@ -97,63 +111,67 @@ class GameActivity : Activity() {
     }
 
     private fun initDrinksForTeamA() {
-        teamAdrink1.setOnClickListener {
-            onDrinkSelected(1)
+         gameActivityBinding.teamAdrink1.setOnClickListener {
+            onDrinkSelected(1,1)
         }
-        teamAdrink2.setOnClickListener {
-            onDrinkSelected(2)
+         gameActivityBinding.teamAdrink2.setOnClickListener {
+            onDrinkSelected(1,2)
         }
-        teamAdrink3.setOnClickListener {
-            onDrinkSelected(3)
+         gameActivityBinding.teamAdrink3.setOnClickListener {
+            onDrinkSelected(1,3)
         }
-        teamAdrink4.setOnClickListener {
-            onDrinkSelected(4)
+         gameActivityBinding.teamAdrink4.setOnClickListener {
+            onDrinkSelected(1,4)
         }
-        teamAdrink5.setOnClickListener {
-            onDrinkSelected(5)
+         gameActivityBinding.teamAdrink5.setOnClickListener {
+            onDrinkSelected(1,5)
         }
-        teamAdrink6.setOnClickListener {
-            onDrinkSelected(6)
+         gameActivityBinding.teamAdrink6.setOnClickListener {
+            onDrinkSelected(1,6)
         }
     }
 
     private fun initDrinksForTeamB() {
-        teamBdrink1.setOnClickListener {
-            onDrinkSelected(1)
+        gameActivityBinding.teamBdrink1.setOnClickListener {
+            onDrinkSelected(2,1)
         }
-        teamBdrink2.setOnClickListener {
-            onDrinkSelected(2)
+        gameActivityBinding.teamBdrink2.setOnClickListener {
+            onDrinkSelected(2,2)
         }
-        teamBdrink3.setOnClickListener {
-            onDrinkSelected(3)
+        gameActivityBinding.teamBdrink3.setOnClickListener {
+            onDrinkSelected(2,3)
         }
-        teamBdrink4.setOnClickListener {
-            onDrinkSelected(4)
+        gameActivityBinding.teamBdrink4.setOnClickListener {
+            onDrinkSelected(2,4)
         }
-        teamBdrink5.setOnClickListener {
-            onDrinkSelected(5)
+        gameActivityBinding.teamBdrink5.setOnClickListener {
+            onDrinkSelected(2,5)
         }
-        teamBdrink6.setOnClickListener {
-            onDrinkSelected(6)
+        gameActivityBinding.teamBdrink6.setOnClickListener {
+            onDrinkSelected(2,6)
         }
     }
 
-    private fun onDrinkSelected(drinkNumber: Int) {
-        match.addDrink(drinkNumber)
+    private fun onDrinkSelected(teamNumber: Int,drinkNumber: Int) {
+        if(match.hasImpactedShotToTreat(teamNumber)){
+            match.selectDrinkForImpact(teamNumber,drinkNumber)
+        } else {
+            match.addDrink(drinkNumber)
+        }
         field.checkFieldConfiguration(match)
     }
 
     private fun linkPlayersButtons() {
-        buttonPlayer1.setOnClickListener {
+        gameActivityBinding.buttonPlayer1.setOnClickListener {
             onPlayerSelected(1, 1)
         }
-        buttonPlayer2.setOnClickListener {
+        gameActivityBinding.buttonPlayer2.setOnClickListener {
             onPlayerSelected(1, 2)
         }
-        buttonPlayer3.setOnClickListener {
+        gameActivityBinding.buttonPlayer3.setOnClickListener {
             onPlayerSelected(2, 1)
         }
-        buttonPlayer4.setOnClickListener {
+        gameActivityBinding.buttonPlayer4.setOnClickListener {
             onPlayerSelected(2, 2)
         }
     }
@@ -163,7 +181,7 @@ class GameActivity : Activity() {
             match.isAttackTeam(teamNumber) -> {
                 match.changePlayerCurrentPlayerTo(playerNumber)
             }
-            match.isCurrentPlayerDefender(teamNumber,playerNumber) -> {
+            match.isCurrentPlayerDefender(teamNumber, playerNumber) -> {
                 match.disabledDefender()
             }
             match.isDefendableButNotDefended(teamNumber) -> {
@@ -175,30 +193,30 @@ class GameActivity : Activity() {
     }
 
     private fun linkShotTypeButtons() {
-        buttonTrickShot.setOnClickListener {
+        gameActivityBinding.buttonTrickShot.setOnClickListener {
             onShotSelected(ShotType.TRICK_SHOT)
         }
-        buttonAirShot.setOnClickListener {
+        gameActivityBinding.buttonAirShot.setOnClickListener {
             onShotSelected(ShotType.AIR_SHOT)
         }
-        buttonBounceShot.setOnClickListener {
+        gameActivityBinding.buttonBounceShot.setOnClickListener {
             onShotSelected(ShotType.BOUNCE)
         }
-        buttonCallShot.setOnClickListener {
+        gameActivityBinding.buttonCallShot.setOnClickListener {
             onShotSelected(ShotType.CALL)
         }
-        buttonSimpleShot.setOnClickListener {
+        gameActivityBinding.buttonSimpleShot.setOnClickListener {
             onShotSelected(ShotType.SIMPLE)
         }
     }
 
     private fun onShotSelected(shotType: ShotType) {
-        match.currentShotType = shotType
+        match.changeShotType(shotType)
         field.checkFieldConfiguration(match)
     }
 
     private fun onFailedButton() {
-        imageButtonFailed.setOnClickListener {
+        gameActivityBinding.imageButtonFailed.setOnClickListener {
             onFailedSelected()
         }
     }
@@ -208,47 +226,45 @@ class GameActivity : Activity() {
         field.checkFieldConfiguration(match)
     }
 
-    private fun onFailedDefenserbutton(){
-        buttonFailedDefense.setOnClickListener {
+    private fun onFailedDefenserbutton() {
+        gameActivityBinding.buttonFailedDefense.setOnClickListener {
             onFailedDefenserbuttonSelected()
         }
     }
 
-    private fun onFailedDefenserbuttonSelected(){
+    private fun onFailedDefenserbuttonSelected() {
         match.revertDefenseFailed()
         field.checkFieldConfiguration(match)
     }
 
     private fun onValidateChoice() {
-        buttonValidate.setOnClickListener {
+        gameActivityBinding.buttonValidate.setOnClickListener {
             onValidChoiceSelected()
         }
     }
 
     private fun onValidChoiceSelected() {
-        if (isValidChoice()) {
+        if(match.hasImpactedShotToTreat()){
+            showThatDrinksNeeded()
+        } else{
             match.addShot()
-            field.checkFieldConfiguration(match)
         }
+        field.checkFieldConfiguration(match)
     }
 
-    private fun onChangeTeam(){
-        buttonChangeTeam.setOnClickListener {
+    private fun showThatDrinksNeeded(){
+        Toast.makeText(this, "Il faut résoudre les impacts avant", Toast.LENGTH_LONG).show()
+    }
+
+    private fun onChangeTeam() {
+        gameActivityBinding.buttonChangeTeam.setOnClickListener {
             onChangeTeamSelected()
         }
     }
 
     private fun onChangeTeamSelected() {
         match.changeTeam()
-    }
-
-    private fun isValidChoice(): Boolean {
-        try {
-            match.containsValidsChoice()
-        } catch (e: NoDrinkSelectedException) {
-            Toast.makeText(this, "Un verre doit être sélectionné pour shot réussi", Toast.LENGTH_LONG).show()
-        }
-        return true
+        field.checkFieldConfiguration(match)
     }
 
 }

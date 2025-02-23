@@ -1,17 +1,18 @@
 package models
 
-import junit.framework.TestCase
-import models.exception.InvalidPlayerNumberException
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-class TeamTest : TestCase() {
+class TeamTest {
 
     private lateinit var team: Team
 
-    public override fun setUp() {
-        super.setUp()
+    @BeforeEach
+    fun setUp() {
         this.team = Team(BigDecimal(1), "Team 1", 1)
         team.init("Player 1", "Player 2")
     }
@@ -59,16 +60,6 @@ class TeamTest : TestCase() {
         assertEquals(player2, team.players[1])
     }
 
-
-    @Test(expected = InvalidPlayerNumberException::class)
-    fun testGetOtherPlayerOnlyWithUnvalidNumber() {
-        try {
-            val player3: Player = team.getOtherPlayerOnly(3)
-        } catch (e:InvalidPlayerNumberException) {
-            assertNotNull(e)
-        }
-    }
-
     @Test
     fun testNbDrinksNotDone(){
         assertEquals(team.nbDrinksNotDone(),6)
@@ -102,7 +93,45 @@ class TeamTest : TestCase() {
     }
 
     @Test
-    fun testAllDrinksAreDone() {
+    fun allPlayersHasPlayed() {
+        team.players[0].hasPlayed = true
+        team.players[1].hasPlayed = true
+        assertTrue(team.allPlayersHasPlayed())
+    }
 
+
+    @Test
+    fun testAllDrinksAreDone() {
+        team.drinks[0].isDone = true
+        team.drinks[1].isDone = true
+        team.drinks[2].isDone = true
+        team.drinks[3].isDone = true
+        team.drinks[4].isDone = true
+        team.drinks[5].isDone = true
+
+        assertTrue(team.allDrinksAreDone())
+    }
+
+    @Test
+    fun toStringTest(){
+        val toString = team.toString()
+        assertEquals("Team(id=1, name='Team 1', number=1, players=[Player(id=1, name='Player 1', number=1, teamNumber=1, trickShotAvailable=false), Player(id=2, name='Player 2', number=2, teamNumber=1, trickShotAvailable=false)], drinks=[Drink(id=1, number=1, isDone=false)\n" +
+                ", Drink(id=2, number=2, isDone=false)\n" +
+                ", Drink(id=3, number=3, isDone=false)\n" +
+                ", Drink(id=4, number=4, isDone=false)\n" +
+                ", Drink(id=5, number=5, isDone=false)\n" +
+                ", Drink(id=6, number=6, isDone=false)\n" +
+                "])",toString)
+    }
+
+    @Test
+    fun equalsTest(){
+        val team2 = Team(BigDecimal(2), "Team 2", 2)
+        team2.init("Player 3", "Player 4")
+        assertFalse(team == team2)
+
+        val team3 = Team(BigDecimal(2), "Team 2", 2)
+        team3.init("Player 3", "Player 4")
+        assertTrue(team3 == team2)
     }
 }

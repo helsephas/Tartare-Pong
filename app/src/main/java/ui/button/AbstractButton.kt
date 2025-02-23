@@ -1,4 +1,4 @@
-package ui
+package ui.button
 
 import android.widget.Button
 import com.example.tartarepong.R

@@ -1,6 +1,8 @@
-package ui
+package ui.field
 
 import models.Match
+import ui.button.drink.DrinkButton
+import ui.button.player.PlayerButton
 
 class FieldSide(
     var teamNumber: Int, var playersButton: MutableList<PlayerButton> = arrayListOf(),

@@ -1,25 +1,28 @@
-package ui
+package ui.button.player
 
 import android.graphics.Color
 import android.widget.Button
 import models.Match
-import models.Player
 
 class PlayerButton(var button: Button, var playerNumber: Int) {
 
     fun checkAttackTeamPlayerState(match: Match) {
-        if (match.isPlayerCurrentPlayer(playerNumber)) {
-            activateShot()
+        if (match.hasImpactedShotToTreat()) {
+            desactivateSelection()
         } else {
-            when {
-                match.hasOtherPlayerTrickshotAvailable(playerNumber) -> {
-                    selectableForTrickShot()
-                }
-                match.hasSecondPlayerNotAlreadyPlayed(playerNumber) -> {
-                    selectable()
-                }
-                else -> {
-                    desactivateSelection()
+            if (match.isPlayerCurrentPlayer(playerNumber)) {
+                activateShot()
+            } else {
+                when {
+                    match.hasOtherPlayerTrickshotAvailable(playerNumber) -> {
+                        selectableForTrickShot()
+                    }
+                    match.hasSecondPlayerNotAlreadyPlayed(playerNumber) -> {
+                        selectable()
+                    }
+                    else -> {
+                        desactivateSelection()
+                    }
                 }
             }
         }
@@ -27,15 +30,19 @@ class PlayerButton(var button: Button, var playerNumber: Int) {
     }
 
     fun checkDefenserPlayerState(match: Match) {
-        when {
-            match.defenderSelectedForDefense(playerNumber) -> {
-                selectedForDefense()
-            }
-            match.defenderAvailable() -> {
-                selectableForDefense()
-            }
-            else -> {
-                desactivateSelection()
+        if (match.hasImpactedShotToTreat()) {
+            desactivateSelection()
+        } else {
+            when {
+                match.defenderSelectedForDefense(playerNumber) -> {
+                    selectedForDefense()
+                }
+                match.defenderAvailable() -> {
+                    selectableForDefense()
+                }
+                else -> {
+                    desactivateSelection()
+                }
             }
         }
     }

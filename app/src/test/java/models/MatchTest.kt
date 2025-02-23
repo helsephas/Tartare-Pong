@@ -1,16 +1,20 @@
 package models
 
-
 import models.shots.ShotType
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 class MatchTest {
     
     private lateinit var match:Match
 
-    @Before
+    @BeforeEach
     fun setUp() {
         this.match = Match().startGame()
     }
@@ -19,33 +23,14 @@ class MatchTest {
     fun testStartGame(){
         assertNotNull(match)
         assertEquals(match.teams.size,2)
+        testTeamA(match.teams[0])
+        testTeamB(match.teams[1])
         assertEquals(match.teams[0].players[0],match.currentPlayerPlaying)
-    }
-
-    @Test
-    fun addShotToMatchSimpleSuccess(){
-        match.currentShotType = ShotType.SIMPLE
-        match.addDrink(1)
-        match.addShot()
-        assertEquals(match.shots.size,1)
-        assertTrue(match.isDrinkScored(1))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForCurrentTeam(1))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForCurrentTeam(2))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForOtherTeam(1))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForOtherTeam(2))
-        assertFalse(match.getAttackTeam().getPlayerByNumber(1).trickShotAvailable)
-    }
-
-    @Test
-    fun addShotToMatchSimpleFailed(){
-        match.currentShotType = ShotType.SIMPLE
-        match.addShot()
-        assertEquals(match.shots.size,1)
-        assertFalse(match.isDrinkScored(1))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForCurrentTeam(1))
-        assertFalse(match.isDrinkScoredDefinitivelyScoredForOtherTeam(1))
-        assertEquals(match.currentPlayerPlaying,match.teams[0].getPlayerByNumber(2))
-        assertTrue(match.getAttackTeam().getPlayerByNumber(1).trickShotAvailable)
+        assertNull(match.currentDrinkSelected)
+        assertEquals(ShotType.SIMPLE,match.currentShotType)
+        assertFalse(match.hasFailedDefense)
+        assertNull(match.shotImpact)
+        assertEquals(1,match.turnNumber)
     }
 
     @Test
@@ -181,4 +166,124 @@ class MatchTest {
     }
 
 
+    private fun testTeamA(team: Team){
+        assertEquals(BigDecimal(1),team.id)
+        assertEquals("Team A",team.name)
+        assertEquals(1,team.number)
+        assertEquals(2,team.players.size)
+        testPlayerA(team)
+        testDrinksA(team)
+    }
+    private fun testPlayerA(team: Team){
+        val player1 = team.players[0]
+        assertEquals(BigDecimal(1),player1.id)
+        assertEquals("Player 1",player1.name)
+        assertEquals(1,player1.number)
+        assertEquals(1,player1.teamNumber)
+
+        val player2 = team.players[1]
+        assertEquals(BigDecimal(2),player2.id)
+        assertEquals("Player 2",player2.name)
+        assertEquals(2,player2.number)
+        assertEquals(1,player2.teamNumber)
+    }
+
+    private fun testDrinksA(team: Team){
+        val drink1 = team.drinks[0]
+        assertEquals(BigDecimal(1),drink1.id)
+        assertFalse(drink1.isDone)
+        assertEquals(1,drink1.number)
+        assertEquals(1,drink1.teamNumber)
+
+        val drink2 = team.drinks[1]
+        assertEquals(BigDecimal(2),drink2.id)
+        assertFalse(drink2.isDone)
+        assertEquals(2,drink2.number)
+        assertEquals(1,drink2.teamNumber)
+
+        val drink3 = team.drinks[2]
+        assertEquals(BigDecimal(3),drink3.id)
+        assertFalse(drink3.isDone)
+        assertEquals(3,drink3.number)
+        assertEquals(1,drink3.teamNumber)
+
+        val drink4 = team.drinks[3]
+        assertEquals(BigDecimal(4),drink4.id)
+        assertFalse(drink4.isDone)
+        assertEquals(4,drink4.number)
+        assertEquals(1,drink4.teamNumber)
+
+        val drink5 = team.drinks[4]
+        assertEquals(BigDecimal(5),drink5.id)
+        assertFalse(drink5.isDone)
+        assertEquals(5,drink5.number)
+        assertEquals(1,drink5.teamNumber)
+
+        val drink6 = team.drinks[5]
+        assertEquals(BigDecimal(6),drink6.id)
+        assertFalse(drink6.isDone)
+        assertEquals(6,drink6.number)
+        assertEquals(1,drink6.teamNumber)
+    }
+
+    private fun testTeamB(team: Team){
+        assertEquals(BigDecimal(2),team.id)
+        assertEquals("Team B",team.name)
+        assertEquals(2,team.number)
+        assertEquals(2,team.players.size)
+        testPlayerB(team)
+        testDrinksB(team)
+    }
+
+    private fun testPlayerB(team: Team){
+        val player3 = team.players[0]
+        assertEquals(BigDecimal(1),player3.id)
+        assertEquals("Player 3",player3.name)
+        assertEquals(1,player3.number)
+        assertEquals(2,player3.teamNumber)
+
+        val player2 = team.players[1]
+        assertEquals(BigDecimal(2),player2.id)
+        assertEquals("Player 4",player2.name)
+        assertEquals(2,player2.number)
+        assertEquals(2,player2.teamNumber)
+    }
+
+    private fun testDrinksB(team: Team){
+        val drink1 = team.drinks[0]
+        assertEquals(BigDecimal(1),drink1.id)
+        assertFalse(drink1.isDone)
+        assertEquals(1,drink1.number)
+        assertEquals(2,drink1.teamNumber)
+
+        val drink2 = team.drinks[1]
+        assertEquals(BigDecimal(2),drink2.id)
+        assertFalse(drink2.isDone)
+        assertEquals(2,drink2.number)
+        assertEquals(2,drink2.teamNumber)
+
+        val drink3 = team.drinks[2]
+        assertEquals(BigDecimal(3),drink3.id)
+        assertFalse(drink3.isDone)
+        assertEquals(3,drink3.number)
+        assertEquals(2,drink3.teamNumber)
+
+        val drink4 = team.drinks[3]
+        assertEquals(BigDecimal(4),drink4.id)
+        assertFalse(drink4.isDone)
+        assertEquals(4,drink4.number)
+        assertEquals(2,drink4.teamNumber)
+
+        val drink5 = team.drinks[4]
+        assertEquals(BigDecimal(5),drink5.id)
+        assertFalse(drink5.isDone)
+        assertEquals(5,drink5.number)
+        assertEquals(2,drink5.teamNumber)
+
+        val drink6 = team.drinks[5]
+        assertEquals(BigDecimal(6),drink6.id)
+        assertFalse(drink6.isDone)
+        assertEquals(6,drink6.number)
+        assertEquals(2,drink6.teamNumber)
+    }
 }

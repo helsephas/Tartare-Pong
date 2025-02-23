@@ -1,11 +1,17 @@
-package ui
+package ui.field
 
-import junit.framework.TestCase
 import models.Match
-import org.mockito.Mockito.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
+import ui.button.drink.DrinkButton
+import ui.button.player.PlayerButton
 
-class FieldSideTest : TestCase() {
-    
+class FieldSideTest {
+
     private lateinit var playerButton: PlayerButton
     private lateinit var player2Button: PlayerButton
 
@@ -18,19 +24,21 @@ class FieldSideTest : TestCase() {
     private lateinit var drink4Button: DrinkButton
     private lateinit var drink5Button: DrinkButton
     private lateinit var drink6Button: DrinkButton
-    
-    public override fun setUp() {
-        super.setUp()
+
+    @BeforeEach
+    fun setUp() {
         this.match = Match().startGame()
-        this.fieldSide = FieldSide(1,getPlayers(),getDrinks())
+        this.fieldSide = FieldSide(1, getPlayers(), getDrinks())
     }
 
+    @Test
     fun testCheckOtherPlayersState() {
         this.fieldSide.checkAttackTeamPlayerState(match)
         verify(playerButton).checkAttackTeamPlayerState(match)
         verify(player2Button).checkAttackTeamPlayerState(match)
     }
 
+    @Test
     fun testDesactivateDrinks() {
         this.fieldSide.checkAttackTeamDrinksState(match)
         verify(drinkButton).checkAttackTeamDrinkState(match)
@@ -41,12 +49,14 @@ class FieldSideTest : TestCase() {
         verify(drink6Button).checkAttackTeamDrinkState(match)
     }
 
+    @Test
     fun testCheckPlayersState() {
         this.fieldSide.checkDefenserPlayersStates(match)
         verify(playerButton).checkDefenserPlayerState(match)
         verify(player2Button).checkDefenserPlayerState(match)
     }
 
+    @Test
     fun testCheckDrinksState() {
         this.fieldSide.checkDefenseDrinksState(match)
         verify(drinkButton).checkDefenseDrinkState(match)
@@ -56,10 +66,10 @@ class FieldSideTest : TestCase() {
         verify(drink5Button).checkDefenseDrinkState(match)
         verify(drink6Button).checkDefenseDrinkState(match)
     }
-    
+
     private fun getPlayers(): MutableList<PlayerButton> {
         playerButton = mock(PlayerButton::class.java)
-        player2Button =  mock(PlayerButton::class.java)
+        player2Button = mock(PlayerButton::class.java)
 
         val playersButton: MutableList<PlayerButton> = arrayListOf()
 
@@ -67,7 +77,7 @@ class FieldSideTest : TestCase() {
         playersButton.add(player2Button)
         return playersButton
     }
-    
+
     private fun getDrinks(): MutableList<DrinkButton> {
         drinkButton = mock(DrinkButton::class.java)
         drink2Button = mock(DrinkButton::class.java)
@@ -75,15 +85,20 @@ class FieldSideTest : TestCase() {
         drink4Button = mock(DrinkButton::class.java)
         drink5Button = mock(DrinkButton::class.java)
         drink6Button = mock(DrinkButton::class.java)
-        
-        
+
+
         val drinksTeamA: MutableList<DrinkButton> = arrayListOf()
-        drinksTeamA.add(drinkButton )
+        drinksTeamA.add(drinkButton)
         drinksTeamA.add(drink2Button)
         drinksTeamA.add(drink3Button)
         drinksTeamA.add(drink4Button)
         drinksTeamA.add(drink5Button)
         drinksTeamA.add(drink6Button)
         return drinksTeamA
+    }
+
+    @AfterEach
+    fun verifyMockInteractions() {
+        verifyNoMoreInteractions(playerButton, player2Button, drinkButton, drink2Button, drink3Button, drink4Button, drink5Button, drink6Button)
     }
 }
